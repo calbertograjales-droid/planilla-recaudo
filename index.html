@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Planilla Recaudo</title>
+
+<!-- Instalación como aplicación (Android, computador) -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+
+<!-- Instalación como aplicación (iPhone / iPad) -->
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Recaudo">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<style>
+  html,body{margin:0;height:100%;background:#000;font-family:Arial,sans-serif}
+  #app{position:fixed;inset:0;width:100%;height:100%;border:0;background:#f3f6fc;
+       padding-top:env(safe-area-inset-top)}
+  #cargando{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+            gap:14px;background:#000;color:#e8c26a;text-align:center;padding:24px;z-index:2;transition:opacity .3s}
+  #cargando img{width:120px;height:120px}
+  #cargando b{font-size:20px}
+  #cargando small{opacity:.8}
+  .rueda{width:30px;height:30px;border:3px solid rgba(232,194,106,.3);border-top-color:#e8c26a;border-radius:50%;animation:g 1s linear infinite}
+  @keyframes g{to{transform:rotate(360deg)}}
+  #ayuda{display:none;font-size:13px;max-width:320px;line-height:1.4}
+  #ayuda a{color:#e8c26a;font-weight:bold}
+</style>
+</head>
+<body>
+
+<div id="cargando">
+  <img src="icon-192.png" alt="">
+  <b>Planilla Recaudo</b>
+  <div class="rueda"></div>
+  <small>Cargando…</small>
+  <div id="ayuda">¿No carga? Puede que deba iniciar sesión con su cuenta de Google.
+    <br><br><a id="abrirDirecto" href="#" target="_blank" rel="noopener">Abrir la aplicación directamente</a></div>
+</div>
+
+<iframe id="app" title="Planilla Recaudo" allow="clipboard-write"></iframe>
+
+<script>
+  // ============================================================
+  // ÚNICO DATO QUE HAY QUE CAMBIAR:
+  // el enlace de la aplicación web de Apps Script (el que termina en /exec).
+  // Implementar → Gestionar implementaciones → copiar la URL.
+  // ============================================================
+  const URL_APP = 'PEGUE_AQUI_EL_ENLACE_QUE_TERMINA_EN_/exec';
+
+  const marco = document.getElementById('app');
+  const tapa = document.getElementById('cargando');
+  document.getElementById('abrirDirecto').href = URL_APP;
+
+  marco.addEventListener('load', () => {
+    tapa.style.opacity = '0';
+    setTimeout(() => tapa.style.display = 'none', 300);
+  });
+  marco.src = URL_APP;
+
+  // Si en 12 segundos no ha cargado, se ofrece abrirla directamente
+  setTimeout(() => {
+    if (tapa.style.display !== 'none') document.getElementById('ayuda').style.display = 'block';
+  }, 12000);
+
+  // Necesario para que el navegador ofrezca "Instalar aplicación"
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+</script>
+</body>
+</html>
